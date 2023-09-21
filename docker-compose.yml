@@ -3,24 +3,29 @@ version: '3'
 services:
   backend:
     build:
-      context: ./django
-    command: gunicorn core.wsgi --bind 0.0.0.0:8000
+      context: ./backend/src
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
+    image: backend:wetrostack
+    container_name: backend_container
   frontend:
     build:
-      context: ./react/blogapi
+      context: ./frontend
+    command: npm run build
+    image: frontend:wetrostack
+    container_name: frontend_container
     volumes:
-      - react_build:/react/build
+      - react_build:/frontend/build
   nginx:
     image: nginx:latest
     ports:
-      - 80:8080
+      - 80:80
     volumes:
       - ./nginx/nginx-setup.conf:/etc/nginx/conf.d/default.conf:ro
-      - react_build:/var/www/react
+      - react_build:/var/www/frontend
     depends_on:
-      - backend
       - frontend
+      - backend
 volumes:
   react_build:

@@ -1,6 +1,10 @@
-FROM python:3.8-alpine
-ENV PYTHONUNBUFFERED 1
-WORKDIR /django
+FROM python:3.10.8-alpine3.16
+WORKDIR /src
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 COPY . .
+# Expose the port that the application will run on
+EXPOSE 8000
+
+# Start Gunicorn
+CMD ["gunicorn", "wetrostack.wsgi:application", "--bind", "0.0.0.0:8000"]
